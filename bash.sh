@@ -26,3 +26,16 @@ if match and match.group(0) == url:
     print("URL OK")
 else:
     print("Invalid URL")
+
+# Обработка всех трех стандартных потоков Python
+#!/usr/bin/env python3
+import sys
+
+sys.stdout.write("Hello, input to integers to divide through a space" + "\n")
+inp = [int(line) for line in sys.stdin.read().strip().split()]
+sys.stdout.write("" + "\n")
+
+try:
+    sys.stdout.write("Result: " + str(inp[0] / inp[1]) + "\n")
+except Exception as error:
+    sys.stderr.write("Error: " + str(error) + "\n")
