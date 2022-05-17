@@ -46,6 +46,7 @@ class S7Connection:
     def connect(self):
         self.connection = snap7.client.Client()
         self.connection.connect(self.ip, self.rack, self.slot)
+        return self.connection.get_connected()
 
     def read(self, db_number, start_addr, size):
         return self.connection.db_read(db_number, start_addr, size)
@@ -76,7 +77,7 @@ class TcpConnection:
     def connect(self):
         self.sock.listen(1)
         self.connection, self.address = self.sock.accept()
-        print(self.address)
+        return self.address
 
     def send(self, data):
         self.connection.sendall(data)
