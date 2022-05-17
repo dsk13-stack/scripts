@@ -67,9 +67,9 @@ class TcpConnection:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.TCP_KEEPIDLE, 1)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.TCP_KEEPINTVL, 3)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.TCP_KEEPCNT, 5)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.TCP_KEEPIDLE, 1)     # время бездействия, сек
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.TCP_KEEPINTVL, 3)    # интервал ping-запросов, сек
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.TCP_KEEPCNT, 5)      # количество ошибок ping-запросов
         self.sock.settimeout(600)
         self.sock.bind((ip, port))
 
