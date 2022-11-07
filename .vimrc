@@ -2,6 +2,7 @@
 # curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 #   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 # Загружаем данный файл в домашний каталог и вводим :PlugInstall
+# Для запуска встроеной обучалки набрать :help tutor
 
 :set number
 call plug#begin()
