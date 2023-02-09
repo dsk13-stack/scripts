@@ -6,46 +6,40 @@
 #2.msmtp
 
 
-#Пути к файлам лога и конфигурации
 LOG_FILE=/var/log/ip_update.log
 IP_FILE=/tmp/ip_update.tmp
 ERROR_FILE=/tmp/ip_update_errors.tmp
-NOW=$(date)
+NOW=$(date +'%F %T')
 
-#Перенаправление STDERROR
 exec 2>$ERROR_FILE
 
-#Функция записи ошибок в лог файл
 function write_log() {
-    echo $* >> $LOG_FILE
-    exit 0
+    echo "$NOW: $*" >> $LOG_FILE
 }
 
-#Функция получения внешнего IP адреса
 function get_external_ip() {    
-    echo $(dig @resolver4.opendns.com myip.opendns.com +short -4 || write_log $NOW "Ошибка получения внешнего IP")
+    local ip=$(dig @resolver4.opendns.com myip.opendns.com +short -4)
+    if [ $? -ne 0 ]; then
+        write_log "Failed to retrieve external IP"
+        exit 1
+    fi
+    echo "$ip"
 }
 
-#Проверка наличия лог файла
-if ! [ -f "$LOG_FILE" ] 
-then
-    touch $LOG_FILE
+if [ ! -f "$LOG_FILE" ]; then
+    touch "$LOG_FILE"
 fi
 
-#Проверка на наличие файла с предидущим IP
-if ! [ -f "$IP_FILE" ] 
-then
-    touch $IP_FILE
-    get_external_ip > $IP_FILE
-    cat $IP_FILE | msmtp -a default dsk13@inbox.ru || write_log $NOW "Ошибка отправки e-mail"
+if [ ! -f "$IP_FILE" ]; then
+    touch "$IP_FILE"
+    get_external_ip > "$IP_FILE"
+    msmtp -a default user@gmail.com < "$IP_FILE" || write_log "Failed to send email"
 else
-    last_ip=$(cat $IP_FILE)
+    last_ip=$(cat "$IP_FILE")
     current_ip=$(get_external_ip) 
-    if ! [ $last_ip == "$current_ip" ]
-    then
-        get_external_ip > $IP_FILE  
-        cat $IP_FILE | msmtp -a default dsk13@inbox.ru || write_log $NOW "Ошибка отправки e-mail"
+    if [ "$last_ip" != "$current_ip" ]; then
+        echo "$current_ip" > "$IP_FILE"
+        msmtp -a default dsk13@inbox.ru < "$IP_FILE" || write_log "Failed to send email"
     fi
 fi
-rm $ERROR_FILE
-
+rm "$ERROR_FILE"
